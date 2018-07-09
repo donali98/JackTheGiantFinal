@@ -16,6 +16,8 @@ public class GamePlay implements Screen {
     private JackGame jackGame;
     private Sprite[] bgs;
 
+    private float lastYPosition;
+
     //Camara que seguira al Sprite
     private OrthographicCamera mainCamera;
     //Punto de vista de la pantalla que se asignara a la mainCamera
@@ -31,9 +33,13 @@ public class GamePlay implements Screen {
     }
 
     private void update(float dt){
+        //mueve la camara
         moveCamera();
+        //simula el loop infinito del fondo
+        checkBackGroundsOutOfBounds();
     }
 
+    //Mueve la camara, el valor que se le resta depende la velocidad
     private void moveCamera(){
         mainCamera.position.y-=1;
     }
@@ -44,6 +50,7 @@ public class GamePlay implements Screen {
         for (int i = 0; i<bgs.length;i++){
             bgs[i] = new Sprite(new Texture("Backgrounds/Game BG.png"));
             bgs[i].setPosition(0,-(i* bgs[i].getHeight()));
+            lastYPosition = Math.abs(bgs[i].getOriginY());
         }
     }
 
@@ -51,6 +58,18 @@ public class GamePlay implements Screen {
     private void drawBackgrounds(){
         for (int i =0 ; i<bgs.length;i++){
             jackGame.getBatch().draw(bgs[i],bgs[i].getX(),bgs[i].getY());
+        }
+    }
+
+    //Si se acaban los fondos simplemente reposiciona nuevos y almacena la ultima posicion
+    private void checkBackGroundsOutOfBounds(){
+
+        for (int i = 0; i<bgs.length; i++){
+            if (bgs[i].getY() - bgs[i].getHeight() / 2f -5 > mainCamera.position.y){
+                float newPosition = bgs[i].getHeight() + lastYPosition;
+                bgs[i].setPosition(0,-newPosition);
+                lastYPosition = Math.abs(newPosition);
+            }
         }
     }
     @Override
