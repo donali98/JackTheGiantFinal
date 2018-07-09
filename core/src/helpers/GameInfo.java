@@ -1,5 +1,9 @@
 package helpers;
 
+
+/***
+ * Clase para almacenar valores globales
+ */
 public class GameInfo {
 
     public static final int WIDTH = 480;
