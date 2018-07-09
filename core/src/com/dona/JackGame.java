@@ -14,7 +14,7 @@ public class JackGame extends Game {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("");
+		img = new Texture("Backgrounds/Game BG.png");
 	}
 
 	@Override
