@@ -1,6 +1,7 @@
 package scenes;
 
 import clouds.Cloud;
+import clouds.CloudsController;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -34,7 +35,7 @@ public class GamePlay implements Screen {
     //El mundo es el entorno fisico donde todos los objetos van a interactuar
     private World world;
 
-    Cloud c;
+    private CloudsController cloudsController;
 
     public GamePlay(JackGame jackGame) {
         this.jackGame = jackGame;
@@ -51,23 +52,22 @@ public class GamePlay implements Screen {
 
         //Estableciendo la gravedad del mundo
         world = new World(new Vector2(0,-9.8f),true);
-        createBackGrounds();
+        cloudsController = new CloudsController(world);
 
-        c = new Cloud(world,"Cloud 1");
-        c.setSpritePosition(GameInfo.WIDTH/2f,GameInfo.HEIGHT/2f);
+        createBackGrounds();
 
     }
 
     private void update(float dt){
         //mueve la camara
-       // moveCamera();
+        moveCamera();
         //simula el loop infinito del fondo
         checkBackGroundsOutOfBounds();
     }
 
     //Mueve la camara, el valor que se le resta depende la velocidad
     private void moveCamera(){
-        mainCamera.position.y-=1;
+        mainCamera.position.y-=1.5f;
     }
 
     //Creando y posicionando los fondos uno detras del otro
@@ -116,7 +116,7 @@ public class GamePlay implements Screen {
 
 
         drawBackgrounds();
-        jackGame.getBatch().draw(c,c.getX()-c.getWidth()/2f,c.getY()-c.getHeight()/2f);
+        cloudsController.drawClouds(jackGame.getBatch());
 
         //Terminando de dibujar
         jackGame.getBatch().end();
