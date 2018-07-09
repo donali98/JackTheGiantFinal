@@ -1,11 +1,16 @@
 package scenes;
 
+import clouds.Cloud;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.dona.JackGame;
@@ -23,18 +28,39 @@ public class GamePlay implements Screen {
     //Punto de vista de la pantalla que se asignara a la mainCamera
     private Viewport viewPort;
 
+    private OrthographicCamera box2DCamera;
+    private Box2DDebugRenderer debugRenderer;
+
+    //El mundo es el entorno fisico donde todos los objetos van a interactuar
+    private World world;
+
+    Cloud c;
+
     public GamePlay(JackGame jackGame) {
         this.jackGame = jackGame;
         mainCamera = new OrthographicCamera(GameInfo.WIDTH,GameInfo.HEIGHT);
         mainCamera.position.set(GameInfo.WIDTH / 2f, GameInfo.HEIGHT/2f,0);
         viewPort = new StretchViewport(GameInfo.WIDTH,GameInfo.HEIGHT,mainCamera );
+
+        box2DCamera = new OrthographicCamera();
+        box2DCamera.setToOrtho(false,GameInfo.WIDTH / GameInfo.PIXELS_PER_METER,
+                GameInfo.HEIGHT/GameInfo.PIXELS_PER_METER);
+        box2DCamera.position.set(GameInfo.WIDTH / 2f, GameInfo.HEIGHT/2f,0);
+
+        debugRenderer = new Box2DDebugRenderer();
+
+        //Estableciendo la gravedad del mundo
+        world = new World(new Vector2(0,-9.8f),true);
         createBackGrounds();
+
+        c = new Cloud(world,"Cloud 1");
+        c.setSpritePosition(GameInfo.WIDTH/2f,GameInfo.HEIGHT/2f);
 
     }
 
     private void update(float dt){
         //mueve la camara
-        moveCamera();
+       // moveCamera();
         //simula el loop infinito del fondo
         checkBackGroundsOutOfBounds();
     }
@@ -90,9 +116,12 @@ public class GamePlay implements Screen {
 
 
         drawBackgrounds();
+        jackGame.getBatch().draw(c,c.getX()-c.getWidth()/2f,c.getY()-c.getHeight()/2f);
 
         //Terminando de dibujar
         jackGame.getBatch().end();
+
+        debugRenderer.render(world,box2DCamera.combined);
 
         jackGame.getBatch().setProjectionMatrix(mainCamera.combined);
         mainCamera.update();
